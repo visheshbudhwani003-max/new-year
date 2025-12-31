@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year Siddhi! ✨</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at center, #2d1b4e, #1a0b2e, #000000);
+            color: white;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+        }
+
+        .section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .section.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Hold Button */
+        .hold-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #progress-ring {
+            position: absolute;
+            transform: rotate(-90deg);
+        }
+
+        .heart-btn {
+            width: 100px;
+            height: 100px;
+            background: #ec4899;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Distractions */
+        .distraction {
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            cursor: pointer;
+        }
+
+        /* Photo Gallery */
+        .photo-stack {
+            position: relative;
+            width: 280px;
+            height: 350px;
+        }
+
+        .photo {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            padding: 10px 10px 40px 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: transform 0.6s ease, opacity 0.6s ease;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+
+        .photo.swiped {
+            transform: translate(200%, -50%) rotate(45deg);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Video Styling */
+        .video-container {
+            width: 300px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+            background: black;
+        }
+
+        /* Message Card */
+        .card-container {
+            width: 300px;
+            height: 420px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .card-container.open .card-inner {
+            transform: rotateY(-180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            border: 6px solid white;
+            overflow: hidden;
+        }
+
+        .card-back {
+            background: white;
+            color: #333;
+            transform: rotateY(180deg);
+            border: 6px solid #fecfef;
+        }
+
+        .floating-heart {
+            position: absolute;
+            animation: float-up 3s infinite ease-in-out;
+            opacity: 0.6;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+        }
+
+        .handwritten {
+            font-family: 'Dancing Script', cursive;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Section 1: Intro -->
+    <div id="section-1" class="section active">
+        <h1 class="text-4xl font-bold text-pink-300 mb-2">Hey Siddhi...</h1>
+        <p class="text-purple-200 mb-10">Hold the heart to unlock your surprise</p>
+        
+        <div class="hold-container">
+            <svg id="progress-ring" width="150" height="150">
+                <circle cx="75" cy="75" r="65" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="transparent" />
+                <circle id="progress-bar" cx="75" cy="75" r="65" stroke="#ec4899" stroke-width="8" fill="transparent" stroke-dasharray="408" stroke-dashoffset="408" />
+            </svg>
+            <div id="heart-trigger" class="heart-btn">❤️</div>
+        </div>
+    </div>
+
+    <!-- Section 2: Distractions -->
+    <div id="section-2" class="section">
+        <h2 class="text-2xl font-bold mb-8">Clear the mess of 2025...</h2>
+        <div class="relative w-64 h-64 flex items-center justify-center">
+            <div id="gift" class="text-7xl opacity-0 scale-50 transition-all duration-500 cursor-pointer">🎁</div>
+            <div class="distraction absolute bg-blue-500 p-4 rounded-lg shadow-lg" style="top: -20px; left: -40px;" onclick="removeMe(this)">💻 Work Stress</div>
+            <div class="distraction absolute bg-red-500 p-4 rounded-lg shadow-lg" style="bottom: 0; right: -50px;" onclick="removeMe(this)">😤 Arguments</div>
+            <div class="distraction absolute bg-gray-600 p-4 rounded-lg shadow-lg" style="top: 50px; right: -30px;" onclick="removeMe(this)">🌧️ Bad Days</div>
+            <div class="distraction absolute bg-indigo-500 p-4 rounded-lg shadow-lg" style="bottom: -20px; left: -20px;" onclick="removeMe(this)">🗺️ Distance</div>
+        </div>
+    </div>
+
+    <!-- Section 3: Gallery -->
+    <div id="section-3" class="section">
+        <h2 class="text-2xl font-bold mb-6 text-pink-200">Our 2025 in Photos</h2>
+        <div class="photo-stack" id="stack">
+            <div class="photo transform rotate-3" style="z-index: 1;" onclick="swipe(this)">
+                <img src="https://lh3.googleusercontent.com/pw/AP1GczPh2B6F13sxEylsiIDGZSO7cu7VBuSSlsLm1bsdKN59ovRVZBypZEVAroyfbpOWoPtq_cdOu0bRVM408HMv7nHCDWd9cmFBKzDMy_P8kDaF9PSEZ521xsNmn1aiyZglfjoPCpPIfZvxTkozrzZJDck=w666-h888-s-no-gm?authuser=0">
+            </div>
+            <div class="photo transform -rotate-3" style="z-index: 2;" onclick="swipe(this)">
+                <img src="https://lh3.googleusercontent.com/pw/AP1GczNWE7eUIWjlAVZQTZgF0iVnC3YyByV8f9dWmeJaqNLRv5F41YnTaJ4o8fBY8ZDoX7E_YjkH1d7HbLUZefmNi4F6C8jUKrx2k06uCj0gOG_GtqObU7a5iYNzph9M_AZzHdve4UeRcVEL2Z7NM6tE5Fk=w666-h888-s-no-gm?authuser=0">
+            </div>
+            <div class="photo transform rotate-1" style="z-index: 3;" onclick="swipe(this)">
+                <img src="https://lh3.googleusercontent.com/pw/AP1GczOWp8OxHiTT4eiRtGW7Qh5w34Vet52BGrXPJgwPdh5knh3sL8Vs_dENyfsv8CNY7Ff4rHhQSu3FwS9q_Wf_dc6SzXxVLLV_ShtdiXrRwagTAkv_AqsvdPikTZOaCB2cTl_i1HBdmjlbH-vfw2kFiZs=w666-h888-s-no-gm?authuser=0">
+            </div>
+        </div>
+        <button id="next-to-video" class="hidden mt-10 bg-pink-500 text-white font-bold py-3 px-8 rounded-full shadow-lg" onclick="showNext(4)">
+            Next: A Video for You 🎥
+        </button>
+    </div>
+
+    <!-- Section 4: Video Highlight -->
+    <div id="section-4" class="section">
+        <h2 class="text-2xl font-bold mb-6 text-pink-200">One of my favorites...</h2>
+        <div class="video-container">
+            <!-- REPLACE THE SRC BELOW WITH YOUR OWN VIDEO LINK -->
+            <video id="memories-video" class="w-full" controls poster="https://placehold.co/600x400/pink/white?text=Our+Memory">
+                <source src="https://rr3---sn-cvh7knek.googlevideo.com/videoplayback?expire=1767192552&ei=yBtVafjACbOW4t4P6bq1wQ8&ip=2405:201:3002:91c8:d0de:817e:5247:c5d5&id=727b10b3300f5688&itag=15&source=picasa&begin=0&requiressl=yes&xpc=EghoqJzIP3oBAQ==&met=1767185352,&mh=yO&mm=32&mn=sn-cvh7knek&ms=su&mv=m&mvi=3&pl=50&rms=su,su&sc=yes&susc=ph&app=fife&ic=617&eaua=cNVolIxvjlQ&pcm2=yes&mime=video/mp4&vprv=1&prv=1&rqh=1&dur=0.000&lmt=1767185314814694&mt=1767184849&cpn=yAo6CWfKLRSD92kl&c=WEB_EMBEDDED_PLAYER&cver=1.20251216.21.00&sparams=expire,ei,ip,id,itag,source,requiressl,xpc,susc,app,ic,eaua,pcm2,mime,vprv,prv,rqh,dur,lmt&sig=AJfQdSswRQIgGhK5NFjlSZiCBMcFmJCIwkLJa-ZKONcWEt0VXY5CNdQCIQCZU5FUo1Vh8M3PgaqBCJxP_GML01-bs8otxVll71Q2UA==&lsparams=met,mh,mm,mn,ms,mv,mvi,pl,rms,sc&lsig=APaTxxMwRgIhANihI5mfUyujc9lT1JrRSjSfZ_IT-uOL1pOOwFNjzy8tAiEAkuFZsYdL1Oi4ChLlgVjjpluPDToNXQxKdU6DDqR84Yc=">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <button class="mt-8 bg-white text-pink-500 font-bold py-3 px-8 rounded-full shadow-lg" onclick="showNext(5)">
+            The Final Surprise 💌
+        </button>
+    </div>
+
+    <!-- Section 5: Final Message -->
+    <div id="section-5" class="section">
+        <div class="card-container" id="card" onclick="this.classList.toggle('open')">
+            <div class="card-inner">
+                <div class="card-front">
+                    <!-- Cute Visuals -->
+                    <div class="floating-heart" style="left: 20%; animation-delay: 0s;">❤️</div>
+                    <div class="floating-heart" style="left: 50%; animation-delay: 1s;">💖</div>
+                    <div class="floating-heart" style="left: 80%; animation-delay: 0.5s;">💗</div>
+                    
+                    <div class="text-6xl mb-4">🧸</div>
+                    <h1 class="text-4xl font-bold handwritten text-gray-800 leading-tight">Happy New Year<br>Siddhi</h1>
+                    <p class="text-pink-600 font-bold text-3xl mt-2">2026</p>
+                    
+                    <div class="mt-6 flex space-x-2">
+                        <span>✨</span><span>🦋</span><span>✨</span>
+                    </div>
+                    <p class="mt-8 text-xs font-bold text-pink-400 uppercase tracking-widest animate-pulse">Tap to open</p>
+                </div>
+                <div class="card-back">
+                    <h2 class="text-2xl font-bold text-pink-600 handwritten mb-2">My Dearest Siddhi,</h2>
+                    <div class="text-sm leading-relaxed text-gray-700">
+                        <p>Thank you for making 2025 so special just by being in it. You are my favorite person.</p>
+                        <p class="mt-2">As we enter 2026, I promise to be your biggest supporter and your safest place.</p>
+                        <p class="mt-2">May this year bring you as much happiness as you bring into my life every day.</p>
+                    </div>
+                    <p class="mt-6 text-xl handwritten text-pink-500">Love always,<br>Vishesh</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showNext(num) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section-' + num).classList.add('active');
+            
+            // Pause video if moving away from section 4
+            const vid = document.getElementById('memories-video');
+            if (num !== 4) vid.pause();
+        }
+
+        // Section 1: Hold Logic
+        const trigger = document.getElementById('heart-trigger');
+        const progressBar = document.getElementById('progress-bar');
+        let holdInterval, progress = 0;
+
+        function startHold() {
+            trigger.style.transform = "scale(0.9)";
+            holdInterval = setInterval(() => {
+                progress += 2;
+                if (progress >= 100) {
+                    clearInterval(holdInterval);
+                    showNext(2);
+                }
+                progressBar.style.strokeDashoffset = 408 - (progress / 100) * 408;
+            }, 30);
+        }
+
+        function endHold() {
+            trigger.style.transform = "scale(1)";
+            clearInterval(holdInterval);
+            if (progress < 100) {
+                progress = 0;
+                progressBar.style.strokeDashoffset = 408;
+            }
+        }
+
+        trigger.addEventListener('mousedown', startHold);
+        trigger.addEventListener('touchstart', (e) => { e.preventDefault(); startHold(); });
+        window.addEventListener('mouseup', endHold);
+        window.addEventListener('touchend', endHold);
+
+        // Section 2: Distractions
+        let removedCount = 0;
+        function removeMe(el) {
+            el.style.transform = "scale(0) rotate(90deg)";
+            el.style.opacity = "0";
+            removedCount++;
+            if (removedCount === 4) {
+                const gift = document.getElementById('gift');
+                gift.classList.remove('opacity-0', 'scale-50');
+                gift.classList.add('opacity-100', 'scale-100');
+                gift.onclick = () => showNext(3);
+            }
+        }
+
+        // Section 3: Gallery
+        let swipedCount = 0;
+        function swipe(el) {
+            if(!el.classList.contains('swiped')) {
+                el.classList.add('swiped');
+                swipedCount++;
+                if(swipedCount === 3) {
+                    document.getElementById('next-to-video').classList.remove('hidden');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
